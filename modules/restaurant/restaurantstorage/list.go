@@ -14,7 +14,6 @@ func (s *sqlStorage) ListDataByCondition(ctx context.Context,
 ) ([]restaurantmodel.Restaurant, error) {
 	var result []restaurantmodel.Restaurant
 	db := s.db
-
 	for i := range morekeys {
 		db = db.Preload(morekeys[i])
 	}

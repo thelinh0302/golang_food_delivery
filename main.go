@@ -63,6 +63,10 @@ func runService(db *gorm.DB) error {
 		restaurants.POST("", ginrestaurant.CreateResaurant(appCtx))
 		//GET ALL HAVE FILTER OR NO FILTER
 		restaurants.GET("", ginrestaurant.ListRestaurant(appCtx))
+		//UPDATE RESTAURANT
+		restaurants.PATCH("/:id", ginrestaurant.UpdateRestaurant(appCtx))
+		//DELETE
+		restaurants.DELETE("/:id", ginrestaurant.DeleteRestaurant(appCtx))
 		//GET BY ID
 		restaurants.GET("/:id", func(c *gin.Context) {
 			id, err := strconv.Atoi(c.Param("id"))
@@ -82,53 +86,6 @@ func runService(db *gorm.DB) error {
 			c.JSON(http.StatusOK, data)
 		})
 
-		//UPDATE RESTAURANT
-		restaurants.PATCH("/:id", func(c *gin.Context) {
-			id, err := strconv.Atoi(c.Param("id"))
-			if err != nil {
-				c.JSON(401, map[string]interface{}{
-					"error": err.Error(),
-				})
-				return
-			}
-			var data RestaurantUpdated
-
-			if err := c.ShouldBind(&data); err != nil {
-				c.JSON(401, map[string]interface{}{
-					"error": err.Error(),
-				})
-				return
-			}
-
-			if err := db.Where("id = ?", id).Updates(&data).Error; err != nil {
-				c.JSON(401, map[string]interface{}{
-					"error": err.Error(),
-				})
-				return
-			}
-			c.JSON(http.StatusOK, gin.H{"ok": 1})
-		})
-		//DELETE
-		restaurants.DELETE("/:id", func(c *gin.Context) {
-			id, err := strconv.Atoi(c.Param("id"))
-
-			if err != nil {
-				c.JSON(401, map[string]interface{}{
-					"error": err.Error(),
-				})
-				return
-			}
-
-			if err := db.Table(Restaurant{}.TableName()).
-				Where("id = ?", id).
-				Delete(nil).Error; err != nil {
-				c.JSON(401, map[string]interface{}{
-					"error": err.Error(),
-				})
-				return
-			}
-			c.JSON(http.StatusOK, gin.H{"ok": 1})
-		})
 	}
 
 	return r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

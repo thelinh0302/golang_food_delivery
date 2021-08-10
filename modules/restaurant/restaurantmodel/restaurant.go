@@ -1,14 +1,15 @@
 package restaurantmodel
 
 import (
+	"Tranning_food/common"
 	"errors"
 	"strings"
 )
 
 type Restaurant struct {
-	Id   int    `json:"id" gorm:"column:id;"`
-	Name string `json:"name" gorm:"column:name;"`
-	Addr string `json:"address" gorm:"column:addr;"` //tag
+	common.SQLModel `json:",inline"`
+	Name            string `json:"name" gorm:"column:name;"`
+	Addr            string `json:"address" gorm:"column:addr;"` //tag
 }
 
 func (Restaurant) TableName() string {
