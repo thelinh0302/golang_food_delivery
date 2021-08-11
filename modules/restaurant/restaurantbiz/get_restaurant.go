@@ -1,6 +1,7 @@
 package restaurantbiz
 
 import (
+	"Tranning_food/common"
 	"Tranning_food/modules/restaurant/restaurantmodel"
 	"context"
 )
@@ -28,7 +29,15 @@ func (biz *getRestaurantBiz) GetRestaurant(ctx context.Context,
 	result, err := biz.store.FindDataByCondition(ctx, map[string]interface{}{"id": id})
 
 	if err != nil {
-		return nil, err
+		if err == common.RecordNotFound {
+			return nil, common.ErrCannotGetEntity(restaurantmodel.EntityName, err)
+		}
+		return nil, common.ErrCannotGetEntity(restaurantmodel.EntityName, err)
 	}
+
+	if result.Status == 0 {
+		return nil, common.ErrEntityDeleted(restaurantmodel.EntityName, nil)
+	}
+
 	return result, nil
 }

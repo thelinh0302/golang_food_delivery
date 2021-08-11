@@ -1,6 +1,7 @@
 package restaurantstorage
 
 import (
+	"Tranning_food/common"
 	"Tranning_food/modules/restaurant/restaurantmodel"
 	"context"
 )
@@ -13,7 +14,7 @@ func (s *sqlStorage) UpdateData(
 	db := s.db
 
 	if err := db.Where("id= ?", id).Updates(data).Error; err != nil {
-		return err
+		return common.ErrDB(err)
 	}
 	return nil
 }
