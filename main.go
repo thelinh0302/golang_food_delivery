@@ -8,29 +8,8 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"log"
-	"net/http"
 	"os"
-	"strconv"
 )
-
-type Restaurant struct {
-	Id   int    `json:"id" gorm:"column:id;"`
-	Name string `json:"name" gorm:"column:name;"`
-	Addr string `json:"address" gorm:"column:addr;"` //tag
-}
-
-func (Restaurant) TableName() string {
-	return "restaurants"
-}
-
-type RestaurantUpdated struct {
-	Name *string `json:"name" gorm:"column:name;"`
-	Addr *string `json:"address" gorm:"column:addr;"` //tag
-}
-
-func (RestaurantUpdated) TableName() string {
-	return Restaurant{}.TableName()
-}
 
 func main() {
 
@@ -68,23 +47,7 @@ func runService(db *gorm.DB) error {
 		//DELETE
 		restaurants.DELETE("/:id", ginrestaurant.DeleteRestaurant(appCtx))
 		//GET BY ID
-		restaurants.GET("/:id", func(c *gin.Context) {
-			id, err := strconv.Atoi(c.Param("id"))
-			if err != nil {
-				c.JSON(401, gin.H{ //H.ginrestaurant{}
-					"error": err.Error(),
-				})
-				return
-			}
-			var data Restaurant
-			if err := db.Where("id = ?", id).First(&data).Error; err != nil {
-				c.JSON(401, gin.H{
-					"error": err.Error(),
-				})
-				return
-			}
-			c.JSON(http.StatusOK, data)
-		})
+		restaurants.GET("/:id", ginrestaurant.GetRestaurant(appCtx))
 
 	}
 
