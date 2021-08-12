@@ -2,6 +2,7 @@ package main
 
 import (
 	"Tranning_food/component"
+	"Tranning_food/middleware"
 	"Tranning_food/modules/restaurant/restauranttransfort/ginrestaurant"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -27,7 +28,10 @@ func main() {
 }
 
 func runService(db *gorm.DB) error {
+	appCtx := component.NewAppContext(db)
+
 	r := gin.Default()
+	r.Use(middleware.Recover(appCtx))
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
@@ -35,7 +39,6 @@ func runService(db *gorm.DB) error {
 	})
 	//crud
 
-	appCtx := component.NewAppContext(db)
 	restaurants := r.Group("/restaurants")
 	{
 		//POST

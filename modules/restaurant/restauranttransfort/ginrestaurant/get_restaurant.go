@@ -15,8 +15,7 @@ func GetRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 		id, err := strconv.Atoi(c.Param("id"))
 
 		if err != nil {
-			c.JSON(http.StatusBadRequest, common.ErrInvalidRequest(err))
-			return
+			panic(common.ErrInvalidRequest(err))
 		}
 		store := restaurantstorage.NewSqlStorage(appCtx.GetMainDBConection())
 
@@ -24,8 +23,7 @@ func GetRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 		result, err := biz.GetRestaurant(c.Request.Context(), id)
 
 		if err != nil {
-			c.JSON(http.StatusBadRequest, err)
-			return
+			panic(err)
 		}
 		c.JSON(http.StatusOK, common.SimpleSuccessResponse(result))
 	}
