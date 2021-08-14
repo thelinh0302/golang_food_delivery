@@ -10,8 +10,10 @@ const EntityName = "restaurant"
 
 type Restaurant struct {
 	common.SQLModel `json:",inline"`
-	Name            string `json:"name" gorm:"column:name;"`
-	Addr            string `json:"address" gorm:"column:addr;"` //tag
+	Name            string         `json:"name" gorm:"column:name;"`
+	Addr            string         `json:"address" gorm:"column:addr;"` //tag
+	Logo            *common.Image  `json:"logo" gorm:"column:logo;"`
+	Cover           *common.Images `json:"cover" gorm:"column:cover;"`
 }
 
 func (Restaurant) TableName() string {
@@ -19,8 +21,10 @@ func (Restaurant) TableName() string {
 }
 
 type RestaurantUpdated struct {
-	Name *string `json:"name" gorm:"column:name;"`
-	Addr *string `json:"address" gorm:"column:addr;"` //tag
+	Name  *string        `json:"name" gorm:"column:name;"`
+	Addr  *string        `json:"address" gorm:"column:addr;"` //tag
+	Logo  *common.Image  `json:"logo" gorm:"column:logo;"`
+	Cover *common.Images `json:"cover" gorm:"column:cover;"`
 }
 
 func (RestaurantUpdated) TableName() string {
@@ -28,9 +32,11 @@ func (RestaurantUpdated) TableName() string {
 }
 
 type RestaurantCreate struct {
-	Id   int    `json:"id" gorm:"column:id;"`
-	Name string `json:"name" gorm:"column:name;"`
-	Addr string `json:"address" gorm:"column:addr;"` //tag
+	Id    int            `json:"id" gorm:"column:id;"`
+	Name  string         `json:"name" gorm:"column:name;"`
+	Addr  string         `json:"address" gorm:"column:addr;"` //tag
+	Logo  *common.Image  `json:"logo" gorm:"column:logo;"`
+	Cover *common.Images `json:"cover" gorm:"column:cover;"`
 }
 
 func (RestaurantCreate) TableName() string {

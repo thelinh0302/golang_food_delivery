@@ -4,6 +4,7 @@ import (
 	"Tranning_food/component"
 	"Tranning_food/middleware"
 	"Tranning_food/modules/restaurant/restauranttransfort/ginrestaurant"
+	"Tranning_food/modules/upload/uploadtransfort/ginupload"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -38,6 +39,7 @@ func runService(db *gorm.DB) error {
 		})
 	})
 	//crud
+	r.POST("/upload", ginupload.Upload(appCtx))
 
 	restaurants := r.Group("/restaurants")
 	{
