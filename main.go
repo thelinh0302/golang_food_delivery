@@ -2,6 +2,7 @@ package main
 
 import (
 	"Tranning_food/component"
+	"Tranning_food/component/uploadprovider"
 	"Tranning_food/middleware"
 	"Tranning_food/modules/restaurant/restauranttransfort/ginrestaurant"
 	"Tranning_food/modules/upload/uploadtransfort/ginupload"
@@ -16,6 +17,17 @@ import (
 func main() {
 
 	dsn := os.Getenv("DBConectionStr")
+
+	s3BucketName := os.Getenv("S3BucketName")
+	s3Region := os.Getenv("S3Region")
+	s3APIKey := os.Getenv("S3ApiKey")
+	s3SecretKey := os.Getenv("S3Secretkey")
+	s3Domain := os.Getenv("S3Domain")
+
+	fmt.Println(s3APIKey, s3SecretKey)
+
+	s3Provider := uploadprovider.NewS3Provider(s3BucketName, s3Region, s3APIKey, s3SecretKey, s3Domain)
+
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	fmt.Println(db, err)
 
@@ -23,13 +35,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := runService(db); err != nil {
-		log.Fatal(err)
+	if err := runService(db, s3Provider); err != nil {
+		log.Fatalln(err)
 	}
 }
 
-func runService(db *gorm.DB) error {
-	appCtx := component.NewAppContext(db)
+func runService(db *gorm.DB, upProvider uploadprovider.UploadProvider) error {
+	appCtx := component.NewAppContext(db, upProvider)
 
 	r := gin.Default()
 	r.Use(middleware.Recover(appCtx))
