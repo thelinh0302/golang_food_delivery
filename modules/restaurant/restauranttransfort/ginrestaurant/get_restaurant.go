@@ -5,6 +5,7 @@ import (
 	"Tranning_food/component"
 	"Tranning_food/modules/restaurant/restaurantbiz"
 	"Tranning_food/modules/restaurant/restaurantstorage"
+	restaurantlikestorage "Tranning_food/modules/restaurantlikes/storage"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -19,8 +20,8 @@ func GetRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 			panic(common.ErrInvalidRequest(err))
 		}
 		store := restaurantstorage.NewSqlStorage(appCtx.GetMainDBConection())
-
-		biz := restaurantbiz.NewGetRestaurantBiz(store)
+		likeStore := restaurantlikestorage.NewSqlStorage(appCtx.GetMainDBConection())
+		biz := restaurantbiz.NewGetRestaurantBiz(store, likeStore)
 		result, err := biz.GetRestaurant(c.Request.Context(), int(uid.GetLocalID()))
 
 		if err != nil {
