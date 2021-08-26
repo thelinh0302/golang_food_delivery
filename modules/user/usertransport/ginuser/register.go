@@ -25,7 +25,8 @@ func CreateUser(appCtx component.AppContext) func(*gin.Context) {
 		if err := biz.Register(c.Request.Context(), &data); err != nil {
 			panic(err)
 		}
-		c.JSON(http.StatusOK, common.SimpleSuccessResponse(data))
+		data.Mask(false)
+		c.JSON(http.StatusOK, common.SimpleSuccessResponse(data.FakeId))
 
 	}
 }
