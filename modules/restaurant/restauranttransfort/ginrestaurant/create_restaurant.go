@@ -16,6 +16,9 @@ func CreateResaurant(appCtx component.AppContext) gin.HandlerFunc {
 		if err := c.ShouldBind(&data); err != nil {
 			panic(err)
 		}
+		requester := c.MustGet(common.CurrentUser).(common.Requester)
+
+		data.OwnerId = requester.GetUserId()
 
 		store := restaurantstorage.NewSqlStorage(appCtx.GetMainDBConection())
 
