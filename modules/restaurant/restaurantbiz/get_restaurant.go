@@ -33,7 +33,7 @@ func (biz *getRestaurantBiz) GetRestaurant(ctx context.Context,
 	id int,
 ) (*restaurantmodel.Restaurant, error) {
 
-	result, err := biz.store.FindDataByCondition(ctx, map[string]interface{}{"id": id})
+	result, err := biz.store.FindDataByCondition(ctx, map[string]interface{}{"id": id}, "User")
 
 	idRestaurant = result.Id
 
@@ -44,7 +44,6 @@ func (biz *getRestaurantBiz) GetRestaurant(ctx context.Context,
 	}
 
 	if v := resLike; v != nil {
-		fmt.Println(v)
 		result.LikeCount = resLike[result.Id]
 	}
 

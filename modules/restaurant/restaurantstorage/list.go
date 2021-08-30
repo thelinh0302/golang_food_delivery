@@ -14,9 +14,6 @@ func (s *sqlStorage) ListDataByCondition(ctx context.Context,
 ) ([]restaurantmodel.Restaurant, error) {
 	var result []restaurantmodel.Restaurant
 	db := s.db
-	for i := range morekeys {
-		db = db.Preload(morekeys[i])
-	}
 
 	db = db.Table(restaurantmodel.Restaurant{}.TableName()).Where(conditions).Where("status in (1)")
 
@@ -29,7 +26,9 @@ func (s *sqlStorage) ListDataByCondition(ctx context.Context,
 	if err := db.Count(&paging.Total).Error; err != nil {
 		return nil, common.ErrDB(err)
 	}
-
+	for i := range morekeys {
+		db = db.Preload(morekeys[i])
+	}
 	if v := paging.FakeCursor; v != "" {
 		if uid, err := common.FromBase58(v); err == nil {
 			db = db.Where("id <?", uid.GetLocalID())

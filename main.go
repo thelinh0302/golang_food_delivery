@@ -32,7 +32,7 @@ func main() {
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	fmt.Println(db, err)
-
+	db = db.Debug()
 	if err != nil {
 		log.Fatal(err)
 	}

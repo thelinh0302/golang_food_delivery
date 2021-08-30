@@ -18,7 +18,7 @@ func CreateResaurant(appCtx component.AppContext) gin.HandlerFunc {
 		}
 		requester := c.MustGet(common.CurrentUser).(common.Requester)
 
-		data.OwnerId = requester.GetUserId()
+		data.UserId = requester.GetUserId()
 
 		store := restaurantstorage.NewSqlStorage(appCtx.GetMainDBConection())
 
