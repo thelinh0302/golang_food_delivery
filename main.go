@@ -5,6 +5,7 @@ import (
 	"Tranning_food/component/uploadprovider"
 	"Tranning_food/middleware"
 	"Tranning_food/modules/restaurant/restauranttransfort/ginrestaurant"
+	"Tranning_food/modules/restaurantlikes/transport/ginrestaurantlike"
 	"Tranning_food/modules/upload/uploadtransfort/ginupload"
 	"Tranning_food/modules/user/usertransport/ginuser"
 	"fmt"
@@ -75,6 +76,8 @@ func runService(db *gorm.DB, upProvider uploadprovider.UploadProvider, secretKey
 		restaurants.DELETE("/:id", ginrestaurant.DeleteRestaurant(appCtx))
 		//GET BY ID
 		restaurants.GET("/:id", ginrestaurant.GetRestaurant(appCtx))
+		//Get user like restaurant
+		restaurants.GET("/:id/liked-users", ginrestaurantlike.ListUser(appCtx))
 
 	}
 

@@ -1,6 +1,6 @@
 package restaurantlikesmodel
 
 type Filter struct {
-	RestaurantId int `json:"restaurant_id" form:"restaurant_id;"`
-	UserId       int `json:"user_id" form:"user_id"`
+	RestaurantId int `json:"-" form:"restaurant_id;"`
+	UserId       int `json:"-" form:"user_id"`
 }

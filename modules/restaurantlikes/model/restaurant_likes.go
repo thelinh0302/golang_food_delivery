@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+const EntityName = "UserLikeRestaurant"
+
 type Like struct {
 	RestaurantId int                `json:"restaurant_id" gorm:"column:restaurant_id;"`
 	UserId       int                `json:"user_id" gorm:"column:user_id;"`

@@ -15,12 +15,12 @@ func ListRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var filter restaurantmodel.Filter
 		if err := c.ShouldBind(&filter); err != nil {
-			panic(err)
+			panic(common.ErrInvalidRequest(err))
 		}
 		var paging common.Paging
 
 		if err := c.ShouldBind(&paging); err != nil {
-			panic(err)
+			panic(common.ErrInvalidRequest(err))
 		}
 		paging.Fulfill()
 		store := restaurantstorage.NewSqlStorage(appCtx.GetMainDBConection())

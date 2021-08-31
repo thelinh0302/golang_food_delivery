@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/btcsuite/btcutil/base58"
+	"time"
 )
 
 const timeLayout = "2006-01-02T15:04:05.999999"
@@ -74,9 +75,13 @@ func (s *sqlStorage) GetUsersRestaurantLike(ctx context.Context,
 	db = db.Preload("User")
 
 	if v := paging.FakeCursor; v != "" {
-		if uid, err := common.FromBase58(v); err == nil {
-			db = db.Where("created_at <?", uid.GetLocalID())
+		timeCreated, err := time.Parse(timeLayout, string(base58.Decode(v)))
+
+		if err != nil {
+			return nil, common.ErrDB(err)
 		}
+
+		db = db.Where("created_at < ?", timeCreated.Format("2006-01-02 15:04:05"))
 	} else {
 		db = db.Offset((paging.Page - 1) * paging.Limit)
 	}
@@ -91,6 +96,8 @@ func (s *sqlStorage) GetUsersRestaurantLike(ctx context.Context,
 	users := make([]common.SimpleUser, len(result))
 
 	for i, item := range result {
+		result[i].User.CreatedAt = item.CreatedAt
+		result[i].User.UpdatedAt = nil
 		users[i] = *result[i].User
 		if i == len(result)-1 {
 			cursorStr := base58.Encode([]byte(fmt.Sprintf("%v", item.CreatedAt.Format(timeLayout))))
