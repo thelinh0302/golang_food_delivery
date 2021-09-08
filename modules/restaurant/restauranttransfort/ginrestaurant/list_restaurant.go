@@ -5,6 +5,7 @@ import (
 	"Tranning_food/component"
 	"Tranning_food/modules/restaurant/restaurantbiz"
 	"Tranning_food/modules/restaurant/restaurantmodel"
+	"Tranning_food/modules/restaurant/restaurantrepo"
 	"Tranning_food/modules/restaurant/restaurantstorage"
 	restaurantlikestorage "Tranning_food/modules/restaurantlikes/storage"
 	"github.com/gin-gonic/gin"
@@ -25,7 +26,8 @@ func ListRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 		paging.Fulfill()
 		store := restaurantstorage.NewSqlStorage(appCtx.GetMainDBConection())
 		likeStore := restaurantlikestorage.NewSqlStorage(appCtx.GetMainDBConection())
-		biz := restaurantbiz.NewListRestaurantBiz(store, likeStore)
+		repo := restaurantrepo.NewListRestaurantRepo(store, likeStore)
+		biz := restaurantbiz.NewListRestaurantBiz(repo)
 		result, err := biz.ListRestaurant(c.Request.Context(), &filter, &paging)
 		if err != nil {
 			panic(err)

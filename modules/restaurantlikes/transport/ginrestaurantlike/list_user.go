@@ -29,6 +29,7 @@ func ListUser(appCtx component.AppContext) gin.HandlerFunc {
 		if err := c.ShouldBind(&paging); err != nil {
 			panic(common.ErrInvalidRequest(err))
 		}
+
 		paging.Fulfill()
 
 		store := restaurantlikestorage.NewSqlStorage(appCtx.GetMainDBConection())
@@ -36,9 +37,11 @@ func ListUser(appCtx component.AppContext) gin.HandlerFunc {
 		biz := restaurantlikebiz.NewListUserLikeRestaurant(store)
 
 		users, err := biz.ListUserLike(c.Request.Context(), nil, &filter, &paging)
+
 		if err != nil {
 			panic(common.ErrInvalidRequest(err))
 		}
+
 		for i := range users {
 			users[i].Mask(false)
 		}
