@@ -78,6 +78,10 @@ func runService(db *gorm.DB, upProvider uploadprovider.UploadProvider, secretKey
 		restaurants.GET("/:id", ginrestaurant.GetRestaurant(appCtx))
 		//Get user like restaurant
 		restaurants.GET("/:id/liked-users", ginrestaurantlike.ListUser(appCtx))
+		//Post v1/restaurants/:id/like
+		restaurants.POST("/:id/like", ginrestaurantlike.UserLikeRestaurant(appCtx))
+		//Delete v1/restaurants/:id/like
+		restaurants.DELETE("/:id/unlike", ginrestaurantlike.UserUnLikeRestaurant(appCtx))
 
 	}
 

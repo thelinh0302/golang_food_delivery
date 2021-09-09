@@ -2,6 +2,16 @@ package common
 
 import "errors"
 
-var (
-	RecordNotFound = errors.New("Record not found")
+import (
+	"log"
 )
+
+var (
+	RecordNotFound = errors.New("record not found")
+)
+
+func AppRecover() {
+	if err := recover(); err != nil {
+		log.Println("Recovery error:", err)
+	}
+}
