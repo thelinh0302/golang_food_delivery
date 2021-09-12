@@ -8,6 +8,9 @@ import (
 
 type UserLikeRestaurantStore interface {
 	Create(ctx context.Context, data *restaurantlikesmodel.Like) error
+	FindDataLikeByCondition(ctx context.Context,
+		condition map[string]interface{},
+		moreKeys ...string) (*restaurantlikesmodel.Like, error)
 }
 
 type IncreaseUserLikeRestaurantStore interface {
@@ -24,8 +27,14 @@ func NewUserLikeRestaurantStore(store UserLikeRestaurantStore, increase Increase
 }
 
 func (biz *userLikeRestaurantBiz) LikeRestaurant(ctx context.Context, data *restaurantlikesmodel.Like) error {
-	err := biz.store.Create(ctx, data)
-	if err != nil {
+
+	findData, err := biz.store.FindDataLikeByCondition(ctx, map[string]interface{}{"restaurant_id": data.RestaurantId, "user_id": data.UserId})
+
+	if findData != nil {
+		return common.ErrEntityExisted(restaurantlikesmodel.EntityName, err)
+	}
+
+	if err := biz.store.Create(ctx, data); err != nil {
 		return restaurantlikesmodel.ErrCannotLikeRestaurant(err)
 	}
 
