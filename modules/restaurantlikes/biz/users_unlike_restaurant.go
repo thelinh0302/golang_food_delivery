@@ -2,6 +2,7 @@ package restaurantlikebiz
 
 import (
 	"Tranning_food/common"
+	"Tranning_food/component/asyncjob"
 	restaurantlikesmodel "Tranning_food/modules/restaurantlikes/model"
 	"context"
 )
@@ -41,7 +42,11 @@ func (biz *userUnLikeRestaurantBiz) UnLikeRestaurant(ctx context.Context, userId
 	//side effect
 	go func() {
 		defer common.AppRecover()
-		_ = biz.decrease.DecreaseLike(ctx, restaurantId)
+		job := asyncjob.NewJob(func(ctx context.Context) error {
+			return biz.decrease.DecreaseLike(ctx, restaurantId)
+		})
+		_ = asyncjob.NewGroup(true, job).Run(ctx)
 	}()
+
 	return nil
 }
