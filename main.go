@@ -8,6 +8,8 @@ import (
 	"Tranning_food/modules/restaurantlikes/transport/ginrestaurantlike"
 	"Tranning_food/modules/upload/uploadtransfort/ginupload"
 	"Tranning_food/modules/user/usertransport/ginuser"
+	"Tranning_food/pubsub/pblocal"
+	"Tranning_food/subscriber"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
@@ -44,8 +46,8 @@ func main() {
 }
 
 func runService(db *gorm.DB, upProvider uploadprovider.UploadProvider, secretKey string) error {
-	appCtx := component.NewAppContext(db, upProvider, secretKey)
-
+	appCtx := component.NewAppContext(db, upProvider, secretKey, pblocal.NewPubSub())
+	subscriber.Setup(appCtx)
 	r := gin.Default()
 	r.Use(middleware.Recover(appCtx))
 	r.GET("/ping", func(c *gin.Context) {

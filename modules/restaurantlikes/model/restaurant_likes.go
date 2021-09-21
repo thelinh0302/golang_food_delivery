@@ -15,6 +15,10 @@ type Like struct {
 	User         *common.SimpleUser `json:"user" gorm:"preload:false;"`
 }
 
+func (l *Like) GetRestaurantId() int {
+	return l.RestaurantId
+}
+
 func (Like) TableName() string { return "restaurant_likes" }
 
 func ErrCannotLikeRestaurant(err error) *common.AppError {
