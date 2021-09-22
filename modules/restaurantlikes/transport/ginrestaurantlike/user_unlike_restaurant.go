@@ -3,7 +3,6 @@ package ginrestaurantlike
 import (
 	"Tranning_food/common"
 	"Tranning_food/component"
-	"Tranning_food/modules/restaurant/restaurantstorage"
 	restaurantlikebiz "Tranning_food/modules/restaurantlikes/biz"
 	restaurantlikestorage "Tranning_food/modules/restaurantlikes/storage"
 	"github.com/gin-gonic/gin"
@@ -21,9 +20,7 @@ func UserUnLikeRestaurant(appCtx component.AppContext) gin.HandlerFunc {
 
 		store := restaurantlikestorage.NewSqlStorage(appCtx.GetMainDBConection())
 
-		decrease := restaurantstorage.NewSqlStorage(appCtx.GetMainDBConection())
-
-		biz := restaurantlikebiz.NewUnUserLikeRestaurantStore(store, decrease)
+		biz := restaurantlikebiz.NewUnUserLikeRestaurantStore(store, appCtx.GetPubSub())
 
 		if err := biz.UnLikeRestaurant(c.Request.Context(),
 			requester.GetUserId(),

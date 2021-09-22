@@ -7,10 +7,6 @@ import (
 	"context"
 )
 
-type HasRestaunrantId interface {
-	GetRestaurantId() int
-}
-
 //func IncreaseUserLikeCountAfterUserLikeRestaurant(appctx component.AppContext, ctx context.Context) {
 //
 //	c, _ := appctx.GetPubSub().Subscribe(ctx, common.TopicUserLikeRestaurant)
@@ -25,13 +21,13 @@ type HasRestaunrantId interface {
 //	}()
 //}
 
-func RunIncreaseLikeCountAfterUserLikeRestaurant(appCtx component.AppContext) consumerJob {
+func RunDescreaseLikeCountAfterUserLikeRestaurant(appCtx component.AppContext) consumerJob {
 	return consumerJob{
-		Title: "Increase like count after user likes restaurant",
+		Title: "Descrease like count after user likes restaurant",
 		Hld: func(ctx context.Context, message *pubsub.Message) error {
 			store := restaurantstorage.NewSqlStorage(appCtx.GetMainDBConection())
 			likeData := message.Data().(HasRestaunrantId)
-			return store.IncreaseLike(ctx, likeData.GetRestaurantId())
+			return store.DecreaseLike(ctx, likeData.GetRestaurantId())
 		},
 	}
 }

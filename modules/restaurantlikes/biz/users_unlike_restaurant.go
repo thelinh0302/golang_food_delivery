@@ -2,8 +2,8 @@ package restaurantlikebiz
 
 import (
 	"Tranning_food/common"
-	"Tranning_food/component/asyncjob"
 	restaurantlikesmodel "Tranning_food/modules/restaurantlikes/model"
+	"Tranning_food/pubsub"
 	"context"
 )
 
@@ -14,17 +14,26 @@ type UserUnLikeRestaurantStore interface {
 		moreKeys ...string) (*restaurantlikesmodel.Like, error)
 }
 
-type DecreaseUserUnLikeStore interface {
-	DecreaseLike(ctx context.Context, id int) error
-}
+//type DecreaseUserUnLikeStore interface {
+//	DecreaseLike(ctx context.Context, id int) error
+//}
 
 type userUnLikeRestaurantBiz struct {
-	store    UserUnLikeRestaurantStore
-	decrease DecreaseUserUnLikeStore
+	store UserUnLikeRestaurantStore
+	pb    pubsub.PubSub
+	//decrease DecreaseUserUnLikeStore
 }
 
-func NewUnUserLikeRestaurantStore(store UserUnLikeRestaurantStore, decrease DecreaseUserUnLikeStore) *userUnLikeRestaurantBiz {
-	return &userUnLikeRestaurantBiz{store: store, decrease: decrease}
+func NewUnUserLikeRestaurantStore(
+	store UserUnLikeRestaurantStore,
+	pb pubsub.PubSub,
+	//decrease DecreaseUserUnLikeStore,
+) *userUnLikeRestaurantBiz {
+	return &userUnLikeRestaurantBiz{
+		store: store,
+		pb:    pb,
+		//decrease: decrease,
+	}
 }
 
 func (biz *userUnLikeRestaurantBiz) UnLikeRestaurant(ctx context.Context, userId, restaurantId int) error {
@@ -40,13 +49,18 @@ func (biz *userUnLikeRestaurantBiz) UnLikeRestaurant(ctx context.Context, userId
 	}
 
 	//side effect
-	go func() {
-		defer common.AppRecover()
-		job := asyncjob.NewJob(func(ctx context.Context) error {
-			return biz.decrease.DecreaseLike(ctx, restaurantId)
-		})
-		_ = asyncjob.NewGroup(true, job).Run(ctx)
-	}()
+	//go func() {
+	//	defer common.AppRecover()
+	//	job := asyncjob.NewJob(func(ctx context.Context) error {
+	//		return biz.decrease.DecreaseLike(ctx, restaurantId)
+	//	})
+	//	_ = asyncjob.NewGroup(true, job).Run(ctx)
+	//}()
+
+	biz.pb.Publish(ctx, common.TopicUserDisLikeRestaurant, pubsub.NewMessage(&restaurantlikesmodel.Like{
+		RestaurantId: restaurantId,
+		UserId:       userId,
+	}))
 
 	return nil
 }

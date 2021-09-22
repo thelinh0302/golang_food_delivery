@@ -47,7 +47,9 @@ func main() {
 
 func runService(db *gorm.DB, upProvider uploadprovider.UploadProvider, secretKey string) error {
 	appCtx := component.NewAppContext(db, upProvider, secretKey, pblocal.NewPubSub())
-	subscriber.Setup(appCtx)
+	if err := subscriber.NewEngine(appCtx).Start(); err != nil {
+		log.Fatalln(err)
+	}
 	r := gin.Default()
 	r.Use(middleware.Recover(appCtx))
 	r.GET("/ping", func(c *gin.Context) {
