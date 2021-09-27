@@ -46,7 +46,9 @@
         }, 3000)
     });
 
-    socket.on('your_profile', (msg) => console.log('your profile:', msg));
+    socket.on('your_profile', (msg) => console.log('your profile:', msg))
+    socket.on('TopicUserLikeRestaurant',(data)=>console.log('TopicUserLikeRestaurant',data))
+    socket.on('TopicUserDisLikeRestaurant',(data)=>console.log('TopicUserDisLikeRestaurant',data))
     socket.on('authentication_failed', (msg) => console.log('authentication_failed:', msg));
     // // socket.on('NoteCreated', (msg) => console.log('NoteCreated', msg));
     // socket.on('TopicUserLikeRestaurant', (data) => console.log('TopicUserLikeRestaurant:', data))
