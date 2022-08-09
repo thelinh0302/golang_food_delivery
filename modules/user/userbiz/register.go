@@ -27,6 +27,10 @@ func (register *registerBusiness) Register(ctx context.Context, data *usermodel.
 
 	user, _ := register.registerStorage.FindUser(ctx, map[string]interface{}{"email": data.Email})
 
+	if err := data.Validate(); err != nil {
+		return usermodel.ErrRequiredEmailorPassword
+	}
+
 	if user != nil {
 		return usermodel.ErrEmailExisted
 	}

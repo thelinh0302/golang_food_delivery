@@ -4,6 +4,7 @@ import (
 	"Tranning_food/common"
 	"Tranning_food/component/tokenprovider"
 	"errors"
+	"strings"
 )
 
 const EntityName = "User"
@@ -55,6 +56,19 @@ func (UserCreate) TableName() string {
 	return User{}.TableName()
 }
 
+func (res *UserCreate) Validate() error {
+
+	res.Email = strings.TrimSpace(res.Email)
+	res.Password = strings.TrimSpace(res.Password)
+
+	if len(res.Email) == 0 {
+		return errors.New("Email is required")
+	} else if len(res.Password) == 0 {
+		return errors.New("Password is required")
+	}
+	return nil
+}
+
 func (u *UserCreate) Mask(isAdmin bool) {
 	u.GenUID(common.DbTypeUser)
 }
@@ -91,5 +105,11 @@ var (
 		errors.New("email has already existed"),
 		"email has already existed",
 		"ErrEmailExisted",
+	)
+
+	ErrRequiredEmailorPassword = common.NewCustomError(
+		errors.New("Please enter your email or password"),
+		"Please enter your email or password",
+		"ErrRequiredEmailorPassword",
 	)
 )
