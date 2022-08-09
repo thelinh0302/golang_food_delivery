@@ -12,11 +12,12 @@ import (
 	"Tranning_food/skio"
 	"Tranning_food/subscriber"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
-	"log"
-	"os"
 )
 
 func main() {

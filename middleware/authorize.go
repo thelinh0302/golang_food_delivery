@@ -37,22 +37,31 @@ func RequireAuth(appCtx component.AppContext) func(ctx *gin.Context) {
 
 	return func(c *gin.Context) {
 		token, err := extractTokenFromHeaderString(c.GetHeader("Authorization"))
+
 		if err != nil {
 			panic(err)
 		}
+
 		db := appCtx.GetMainDBConection()
+
 		store := userstorage.NewSqlStorage(db)
+
 		payload, err := tokenProvider.Validate(token)
+
 		if err != nil {
 			panic(err)
 		}
+
 		user, err := store.FindUser(c.Request.Context(), map[string]interface{}{"id": payload.UserId})
+
 		if err != nil {
 			panic(err)
 		}
+
 		if user.Status == 0 {
 			panic(common.ErrNoPermission(errors.New("user has been deleted or banned")))
 		}
+
 		user.Mask(false)
 
 		c.Set(common.CurrentUser, user)

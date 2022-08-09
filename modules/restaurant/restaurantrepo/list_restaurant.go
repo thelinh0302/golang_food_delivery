@@ -4,6 +4,7 @@ import (
 	"Tranning_food/common"
 	"Tranning_food/modules/restaurant/restaurantmodel"
 	"context"
+	"fmt"
 )
 
 type ListRestaurantRepo interface {
@@ -41,22 +42,22 @@ func (biz *listRestaurantRepo) ListRestaurant(
 	if err != nil {
 		return nil, common.ErrCannotListEntity(restaurantmodel.EntityName, err)
 	}
-	//ids := make([]int, len(result))
-	//
-	//for i := range result {
-	//	ids[i] = result[i].Id
-	//}
-	//
-	//mapResLike, err := biz.likeStore.GetRestaurantLike(ctx, ids)
-	//
-	//if err != nil {
-	//	fmt.Println("Cannot get restaurant likes:", err)
-	//}
-	//if v := mapResLike; v != nil {
-	//	for i, item := range result {
-	//		result[i].LikeCount = mapResLike[item.Id]
-	//	}
-	//}
+	ids := make([]int, len(result))
+
+	for i := range result {
+		ids[i] = result[i].Id
+	}
+
+	mapResLike, err := biz.likeStore.GetRestaurantLike(ctx, ids)
+
+	if err != nil {
+		fmt.Println("Cannot get restaurant likes:", err)
+	}
+	if v := mapResLike; v != nil {
+		for i, item := range result {
+			result[i].LikeCount = mapResLike[item.Id]
+		}
+	}
 
 	return result, nil
 }
