@@ -25,14 +25,14 @@ func NewRegisterBusiness(registerStorage RegisterStorage, hasher Hasher) *regist
 
 func (register *registerBusiness) Register(ctx context.Context, data *usermodel.UserCreate) error {
 
-	user, _ := register.registerStorage.FindUser(ctx, map[string]interface{}{"email": data.Email})
+	user, _ := register.registerStorage.FindUser(ctx, map[string]interface{}{"phone": data.Phone, "email": data.Email})
 
 	if err := data.Validate(); err != nil {
-		return usermodel.ErrRequiredEmailorPassword
+		return err
 	}
 
 	if user != nil {
-		return usermodel.ErrEmailExisted
+		return usermodel.ErrEmailorPhoneExisted
 	}
 
 	salt := common.GenSalt(50)

@@ -47,6 +47,7 @@ type UserCreate struct {
 	Password        string        `json:"password" gorm:"column:password;"`
 	LastName        string        `json:"last_name" gorm:"column:last_name;"`
 	FirstName       string        `json:"first_name" gorm:"column:first_name;"`
+	Phone           string        `json:"phone" gorm:"column:phone;"`
 	Role            string        `json:"-" gorm:"column:role;"`
 	Salt            string        `json:"-" gorm:"column:salt;"`
 	Avatar          *common.Image `json:"avatar,omitempty" gorm:"column:avatar;type:json"`
@@ -60,11 +61,25 @@ func (res *UserCreate) Validate() error {
 
 	res.Email = strings.TrimSpace(res.Email)
 	res.Password = strings.TrimSpace(res.Password)
-
+	res.Phone = strings.TrimSpace(res.Phone)
 	if len(res.Email) == 0 {
-		return errors.New("Email is required")
+		return common.NewCustomError(
+			errors.New("email has already required"),
+			"email has already required",
+			"ErrEmailRequired",
+		)
 	} else if len(res.Password) == 0 {
-		return errors.New("Password is required")
+		return common.NewCustomError(
+			errors.New("password has already required"),
+			"password has already required",
+			"ErrPasswordRequired",
+		)
+	} else if len(res.Phone) == 0 {
+		return common.NewCustomError(
+			errors.New("phone has already required"),
+			"phone has already required",
+			"ErrPhoneRequired",
+		)
 	}
 	return nil
 }
@@ -101,10 +116,15 @@ var (
 		"ErrUsernameOrPasswordInvalid",
 	)
 
-	ErrEmailExisted = common.NewCustomError(
-		errors.New("email has already existed"),
-		"email has already existed",
-		"ErrEmailExisted",
+	ErrEmailorPhoneExisted = common.NewCustomError(
+		errors.New("email/phone has already existed"),
+		"email/phone has already existed",
+		"ErrEmailorPhoneExisted",
+	)
+	ErrPhoneExisted = common.NewCustomError(
+		errors.New("phone has already existed"),
+		"phone has already existed",
+		"ErrPhoneExisted",
 	)
 
 	ErrRequiredEmailorPassword = common.NewCustomError(
