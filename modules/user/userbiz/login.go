@@ -38,21 +38,21 @@ func NewLoginBusiness(
 	}
 }
 
-//1.Find user,email
+//1.Find user,email. phone
 //2.Hash pass from input and compare pass in db
 //3.Provider: issue JWT Token for client
 //3.1 Access token and refresh token
 //4 Return token
 
 func (business *logiBusiness) Login(ctx context.Context, data *usermodel.UserLogin) (*tokenprovider.Token, error) {
-	user, err := business.storeUser.FindUser(ctx, map[string]interface{}{"email": data.Email})
+	user, err := business.storeUser.FindUser(ctx, map[string]interface{}{"phone": data.Phone})
 	if err != nil {
-		return nil, usermodel.ErrUsernameOrPasswordInvalid
+		return nil, usermodel.ErrPhoneOrPasswordInvalid
 	}
 	passHasher := business.hasher.Hash(data.Password + user.Salt)
 
 	if user.Password != passHasher {
-		return nil, usermodel.ErrUsernameOrPasswordInvalid
+		return nil, usermodel.ErrPhoneOrPasswordInvalid
 	}
 	payload := tokenprovider.TokenPayload{
 		UserId: user.Id,

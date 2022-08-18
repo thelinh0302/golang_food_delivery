@@ -31,8 +31,6 @@ func main() {
 	s3Domain := os.Getenv("S3Domain")
 	secretKey := os.Getenv("SYSTEM_SECRET")
 
-	fmt.Println(s3APIKey, s3SecretKey)
-
 	s3Provider := uploadprovider.NewS3Provider(s3BucketName, s3Region, s3APIKey, s3SecretKey, s3Domain)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})

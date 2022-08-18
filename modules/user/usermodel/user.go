@@ -89,7 +89,7 @@ func (u *UserCreate) Mask(isAdmin bool) {
 }
 
 type UserLogin struct {
-	Email    string `json:"email" form:"email" gorm:"column:email;"`
+	Phone    string `json:"phone" form:"phone" gorm:"column:phone;"`
 	Password string `json:"password" form:"password" gorm:"column:password;"`
 }
 
@@ -110,10 +110,10 @@ func NewAccount(at, rt *tokenprovider.Token) *Account {
 }
 
 var (
-	ErrUsernameOrPasswordInvalid = common.NewCustomError(
-		errors.New("username or password invalid"),
-		"username or password invalid",
-		"ErrUsernameOrPasswordInvalid",
+	ErrPhoneOrPasswordInvalid = common.NewCustomError(
+		errors.New("phone or password invalid"),
+		"phone or password invalid",
+		"ErrphoneOrPasswordInvalid",
 	)
 
 	ErrEmailorPhoneExisted = common.NewCustomError(
