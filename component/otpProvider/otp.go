@@ -1,4 +1,4 @@
-package otpServices
+package otpProvider
 
 import (
 	"context"
@@ -9,29 +9,33 @@ import openapi "github.com/twilio/twilio-go/rest/api/v2010"
 type otpServices struct {
 	accountId string
 	tokenId   string
-	toPhone   string
-	client    *twilio.RestClient
+	fromPhone string
 }
 
-func otpServicesProvider(accountId string, tokenId string, client *twilio.RestClient) *otpServices {
+var (
+	client *twilio.RestClient
+)
+
+func NewOtpServicesProvider(accountId string, tokenId string, fromPhone string) *otpServices {
 	otpProvider := &otpServices{
 		accountId: accountId,
 		tokenId:   tokenId,
+		fromPhone: fromPhone,
 	}
 	client = twilio.NewRestClientWithParams(twilio.ClientParams{
 		Username: otpProvider.accountId,
 		Password: otpProvider.tokenId,
 	})
-	return otpProvider
+	return nil
 }
 
-func (provider *otpServices) sendMessage(ctx context.Context, fromPhone string, msg string) (res any, err error) {
+func (provider *otpServices) SendMessage(ctx context.Context, toPhone string, msg string) (res any, err error) {
 	params := openapi.CreateMessageParams{}
-	params.SetTo(provider.toPhone)
-	params.SetFrom(fromPhone)
+	params.SetTo(provider.fromPhone)
+	params.SetFrom(toPhone)
 	params.SetBody(msg)
 
-	_, err = provider.client.Api.CreateMessage(&params)
+	_, err = client.Api.CreateMessage(&params)
 
 	if err != nil {
 		return nil, err
