@@ -81,6 +81,7 @@ func runService(db *gorm.DB, upProvider uploadprovider.UploadProvider, secretKey
 	v1.POST("/register", ginuser.CreateUser(appCtx))
 
 	v1.POST("/login", ginuser.Login(appCtx))
+	v1.POST("/get-otp", ginuser.GetOtp(appCtx))
 
 	v1.GET("/profile", middleware.RequireAuth(appCtx), ginuser.GetProfile(appCtx))
 

@@ -2,6 +2,7 @@ package usermodel
 
 import (
 	"Tranning_food/common"
+	"Tranning_food/component/digitOtp"
 	"Tranning_food/component/tokenprovider"
 	"errors"
 	"strings"
@@ -57,6 +58,18 @@ func (UserCreate) TableName() string {
 	return User{}.TableName()
 }
 
+func (res *UserOTP) ValidateOTP() error {
+	res.Phone = strings.TrimSpace(res.Phone)
+	if len(res.Phone) == 0 {
+		return common.NewCustomError(
+			errors.New("phone has already required"),
+			"phone has already required",
+			"errPhoneRequired",
+		)
+	}
+	return nil
+}
+
 func (res *UserCreate) Validate() error {
 
 	res.Email = strings.TrimSpace(res.Email)
@@ -93,6 +106,10 @@ type UserLogin struct {
 	Password string `json:"password" form:"password" gorm:"column:password;"`
 }
 
+type UserOTP struct {
+	Phone string `json:"phone" form: "phone" gorm:"column:phone;"`
+}
+
 func (UserLogin) TableName() string {
 	return User{}.TableName()
 }
@@ -100,6 +117,11 @@ func (UserLogin) TableName() string {
 type Account struct {
 	AccessToken  *tokenprovider.Token `json:"access_token"`
 	RefreshToken *tokenprovider.Token `json:"refresh_token"`
+}
+
+type ResOTP struct {
+	AccessToken *tokenprovider.Token `json:"access_token"`
+	Otp         *digitOtp.OTP        `json:"otp"`
 }
 
 func NewAccount(at, rt *tokenprovider.Token) *Account {
@@ -114,6 +136,12 @@ var (
 		errors.New("phone or password invalid"),
 		"phone or password invalid",
 		"ErrphoneOrPasswordInvalid",
+	)
+
+	ErrPhoneInvalid = common.NewCustomError(
+		errors.New("phone does not exist"),
+		"phone does not exist",
+		"ErrPhoneInvalid",
 	)
 
 	ErrEmailorPhoneExisted = common.NewCustomError(
