@@ -1,18 +1,16 @@
-package digitOtp
+package digitProvider
 
 import (
 	"crypto/rand"
 )
 
-type digitHash struct{}
-
 const otpChars = "1234567890"
 
-func GenerateOTP() (string, error) {
+func GenerateOT1P() (*Otp, error) {
 	buffer := make([]byte, 6)
 	_, err := rand.Read(buffer)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	otpCharsLength := len(otpChars)
@@ -20,5 +18,8 @@ func GenerateOTP() (string, error) {
 		buffer[i] = otpChars[int(buffer[i])%otpCharsLength]
 	}
 
-	return string(buffer), nil
+	return &Otp{
+		Otp: string(buffer),
+	}, nil
+
 }

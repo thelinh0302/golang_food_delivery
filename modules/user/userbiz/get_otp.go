@@ -2,7 +2,7 @@ package userbiz
 
 import (
 	"Tranning_food/component"
-	"Tranning_food/component/digitOtp"
+	"Tranning_food/component/digitProvider"
 	"Tranning_food/component/tokenprovider"
 	"Tranning_food/modules/user/usermodel"
 	"context"
@@ -29,7 +29,7 @@ func NewGetOtpBiz(storeUser GetOtpStorage, tokenProvider tokenprovider.Provider,
 
 // 1. check phone exited
 // 2. random otp
-func (biz *getOtpBiz) GetOtp(ctx context.Context, data *usermodel.UserOTP) (*tokenprovider.Token, error) {
+func (biz *getOtpBiz) GetOtp(ctx context.Context, data *usermodel.UserOTP) (*usermodel.ResOTP, error) {
 	user, err := biz.storeUser.FindUser(ctx, map[string]interface{}{"phone": data.Phone})
 	println(user)
 	if err := data.ValidateOTP(); err != nil {
@@ -39,15 +39,20 @@ func (biz *getOtpBiz) GetOtp(ctx context.Context, data *usermodel.UserOTP) (*tok
 		return nil, usermodel.ErrPhoneInvalid
 	}
 
-	otp, _ := digitOtp.GenerateOTP()
+	otp, _ := digitProvider.GenerateOT1P()
 	payload := tokenprovider.TokenPayload{
 		UserId: user.Id,
 		Role:   user.Role,
 	}
 	accessToken, err := biz.tokenProvider.Generate(payload, biz.expiry)
 
+	dataRes := &usermodel.ResOTP{
+		AccessToken: accessToken,
+		Otp:         otp,
+	}
+
 	println(otp)
 	println(accessToken)
 
-	return accessToken, nil
+	return dataRes, nil
 }

@@ -2,7 +2,7 @@ package usermodel
 
 import (
 	"Tranning_food/common"
-	"Tranning_food/component/digitOtp"
+	"Tranning_food/component/digitProvider"
 	"Tranning_food/component/tokenprovider"
 	"errors"
 	"strings"
@@ -121,7 +121,7 @@ type Account struct {
 
 type ResOTP struct {
 	AccessToken *tokenprovider.Token `json:"access_token"`
-	Otp         *digitOtp.OTP        `json:"otp"`
+	Otp         *digitProvider.Otp   `json:"otp"`
 }
 
 func NewAccount(at, rt *tokenprovider.Token) *Account {
