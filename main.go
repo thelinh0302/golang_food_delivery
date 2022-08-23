@@ -2,7 +2,6 @@ package main
 
 import (
 	"Tranning_food/component"
-	otpServices2 "Tranning_food/component/otpProvider"
 	"Tranning_food/component/uploadprovider"
 	"Tranning_food/middleware"
 	"Tranning_food/modules/restaurant/restauranttransfort/ginrestaurant"
@@ -13,6 +12,7 @@ import (
 	"Tranning_food/skio"
 	"Tranning_food/subscriber"
 	"fmt"
+	"github.com/twilio/twilio-go"
 	"log"
 	"os"
 
@@ -21,6 +21,19 @@ import (
 	"gorm.io/gorm"
 )
 
+var (
+	client *twilio.RestClient
+)
+
+func init() {
+	accountSId := ("AC12d527b67b01ce3ff91a1932bba0b1e6")
+	authToken := ("e7be1f6f054c67060b239b4fdbbace63")
+
+	client = twilio.NewRestClientWithParams(twilio.ClientParams{
+		Username: accountSId,
+		Password: authToken,
+	})
+}
 func main() {
 
 	dsn := os.Getenv("DBConectionStr")
@@ -32,10 +45,6 @@ func main() {
 	s3Domain := os.Getenv("S3Domain")
 	secretKey := os.Getenv("SYSTEM_SECRET")
 
-	accountID := os.Getenv("AccountSID")
-	tokenID := os.Getenv("AuthToken")
-	fromPhone := os.Getenv("FromPhone")
-	otpProvider := otpServices2.NewOtpServicesProvider(accountID, tokenID, fromPhone)
 	s3Provider := uploadprovider.NewS3Provider(s3BucketName, s3Region, s3APIKey, s3SecretKey, s3Domain)
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -45,13 +54,14 @@ func main() {
 		log.Fatal(err)
 	}
 
-	if err := runService(db, s3Provider, secretKey, otpProvider); err != nil {
+	if err := runService(db, s3Provider, secretKey); err != nil {
 		log.Fatalln(err)
 	}
+
 }
 
-func runService(db *gorm.DB, upProvider uploadprovider.UploadProvider, secretKey string, otpProvider otpServices2.OtpProvider) error {
-	appCtx := component.NewAppContext(db, upProvider, secretKey, pblocal.NewPubSub(), otpProvider)
+func runService(db *gorm.DB, upProvider uploadprovider.UploadProvider, secretKey string) error {
+	appCtx := component.NewAppContext(db, upProvider, secretKey, pblocal.NewPubSub())
 	r := gin.Default()
 
 	rtEngine := skio.NewEngine()

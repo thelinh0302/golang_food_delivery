@@ -2,7 +2,7 @@ package userbiz
 
 import (
 	"Tranning_food/component"
-	"Tranning_food/component/digitProvider"
+	"Tranning_food/component/messprovider"
 	"Tranning_food/component/tokenprovider"
 	"Tranning_food/modules/user/usermodel"
 	"context"
@@ -13,10 +13,11 @@ type GetOtpStorage interface {
 }
 
 type getOtpBiz struct {
-	appCtx        component.AppContext
-	storeUser     GetOtpStorage
-	tokenProvider tokenprovider.Provider
-	expiry        int
+	appCtx         component.AppContext
+	storeUser      GetOtpStorage
+	tokenProvider  tokenprovider.Provider
+	expiry         int
+	sendMsgProvder messprovider.MessProvider
 }
 
 func NewGetOtpBiz(storeUser GetOtpStorage, tokenProvider tokenprovider.Provider, expired int) *getOtpBiz {
@@ -24,12 +25,13 @@ func NewGetOtpBiz(storeUser GetOtpStorage, tokenProvider tokenprovider.Provider,
 		storeUser:     storeUser,
 		tokenProvider: tokenProvider,
 		expiry:        expired,
+		//sendMsgProvder: sendMsgProvder,
 	}
 }
 
 // 1. check phone exited
 // 2. random otp
-func (biz *getOtpBiz) GetOtp(ctx context.Context, data *usermodel.UserOTP) (*usermodel.ResOTP, error) {
+func (biz *getOtpBiz) GetOtp(ctx context.Context, data *usermodel.UserOTP) (*tokenprovider.Token, error) {
 	user, err := biz.storeUser.FindUser(ctx, map[string]interface{}{"phone": data.Phone})
 	println(user)
 	if err := data.ValidateOTP(); err != nil {
@@ -39,20 +41,18 @@ func (biz *getOtpBiz) GetOtp(ctx context.Context, data *usermodel.UserOTP) (*use
 		return nil, usermodel.ErrPhoneInvalid
 	}
 
-	otp, _ := digitProvider.GenerateOT1P()
+	//otp, _ := digitProvider.GenerateOT1P()
+	sendMSg, errOtp := biz.sendMsgProvder.SendMessage(ctx, "0399172329", "23432")
+	if errOtp != nil {
+		return nil, errOtp
+	}
+	println(sendMSg)
 	payload := tokenprovider.TokenPayload{
 		UserId: user.Id,
 		Role:   user.Role,
 	}
+
 	accessToken, err := biz.tokenProvider.Generate(payload, biz.expiry)
 
-	dataRes := &usermodel.ResOTP{
-		AccessToken: accessToken,
-		Otp:         otp,
-	}
-
-	println(otp)
-	println(accessToken)
-
-	return dataRes, nil
+	return accessToken, nil
 }

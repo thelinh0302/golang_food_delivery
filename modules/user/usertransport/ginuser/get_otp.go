@@ -21,8 +21,10 @@ func GetOtp(ctx component.AppContext) gin.HandlerFunc {
 		}
 
 		db := ctx.GetMainDBConection()
-
 		tokenProvider := jwt.NewTokenJWTProvider(ctx.SecretKey())
+
+		//providerSendMsg := messprovider.NewSendMessage("AC12d527b67b01ce3ff91a1932bba0b1e6", "e7be1f6f054c67060b239b4fdbbace63", "+18557971273")
+
 		store := userstorage.NewSqlStorage(db)
 
 		biz := userbiz.NewGetOtpBiz(store, tokenProvider, 60*60*24)
